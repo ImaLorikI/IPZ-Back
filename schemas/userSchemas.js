@@ -15,3 +15,7 @@ export const loginUserSchema = Joi.object({
   email: Joi.string().required(),
   password: Joi.string().required(),
 });
+
+export const wishlistActionSchema = Joi.object({
+  bookId: Joi.string().required(),
+});

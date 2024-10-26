@@ -1,7 +1,14 @@
 import catchAsync from "../helpers/catchAsync.js";
 import HttpError from "../helpers/HttpError.js";
-import { signupUser, loginUser } from "../services/userServices.js";
-import { generateHash } from "../services/userServices.js";
+import { 
+  signupUser, 
+  loginUser, 
+  generateHash, 
+  findUserById,
+  addToWishlist,
+  removeFromWishlist,
+  getWishlist
+} from "../services/userServices.js";
 import { User } from "../models/user.js";
 
 export const registerUser = catchAsync(async (req, res) => {
@@ -53,4 +60,24 @@ export const logoutUser = catchAsync(async (req, res) => {
   const { id } = req.user;
   await User.findByIdAndUpdate(id, { token: null });
   res.status(204).send();
+});
+
+export const addToWishlistController = catchAsync(async (req, res) => {
+  const { id: userId } = req.user;
+  const { bookId } = req.body;
+  const wishlist = await addToWishlist(userId, bookId);
+  res.status(200).json({ wishlist });
+});
+
+export const removeFromWishlistController = catchAsync(async (req, res) => {
+  const { id: userId } = req.user;
+  const { bookId } = req.body;
+  const wishlist = await removeFromWishlist(userId, bookId);
+  res.status(200).json({ wishlist });
+});
+
+export const getWishlistController = catchAsync(async (req, res) => {
+  const { id: userId } = req.user;
+  const wishlist = await getWishlist(userId);
+  res.status(200).json({ wishlist });
 });

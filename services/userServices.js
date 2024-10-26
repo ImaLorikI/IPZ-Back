@@ -40,3 +40,26 @@ export async function findUserById(id) {
   const user = await User.findById(id);
   return user;
 }
+
+export async function addToWishlist(userId, bookId) {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { $addToSet: { wishlist: bookId } },
+    { new: true }
+  ).populate('wishlist');
+  return user.wishlist;
+}
+
+export async function removeFromWishlist(userId, bookId) {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { $pull: { wishlist: bookId } },
+    { new: true }
+  ).populate('wishlist');
+  return user.wishlist;
+}
+
+export async function getWishlist(userId) {
+  const user = await User.findById(userId).populate('wishlist');
+  return user.wishlist;
+}

@@ -5,6 +5,7 @@ import booksRouter from "./routes/booksRouter.js";
 import authRouter from "./routes/authRouter.js";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import orderRouter from "./routes/orderRouter.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use(express.json());
 
 app.use("/api/books", booksRouter);
 app.use("/users", authRouter);
+app.use("/api/orders", orderRouter);
 
 app.use((_, res) => {
   res.status(404).json({ message: "Route not found" });

@@ -21,11 +21,35 @@ const userSchemas = new Schema(
       type: String,
       default: null,
     },
+    wishlist: [{
+      type: Schema.Types.ObjectId,
+      ref: 'books'
+    }],
+    phone: {
+      type: String,
+    },
+    address: {
+      type: String,
+    },
+    paymentMethods: [{
+      type: {
+        type: String,
+        enum: ['card', 'cash'],
+        required: true
+      },
+      cardNumber: {
+        type: String,
+        required: function() { return this.type === 'card'; }
+      },
+      expirationDate: {
+        type: String,
+        required: function() { return this.type === 'card'; }
+      }
+    }]
   },
   {
     versionKey: false,
   }
 );
-
 
 export const User = model("user", userSchemas);

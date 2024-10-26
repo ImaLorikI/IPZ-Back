@@ -1,102 +1,36 @@
-import path from "path";
+import { getAllBooks, createBook, searchBooks } from "../services/bookServices.js";
 
-import { Books } from "../models/books.js";
-
-export const getAllBooks = async (req, res) => {
+export const getAllBooksController = async (req, res) => {
   try {
-    const owner = req.user.id;
-    const getUsers = await Books.find({ owner });
-    res.status(200).json(getUsers);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const getOneBook = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const owner = req.user.id;
-    const get = await Books.findOne({ _id: id, owner });
-    if (!get) {
-      return res.status(404).json({ message: "Not found" });
-    }
-    res.status(200).json(get);
-  } catch (error) {
-    console.log(error);
-    res.json({ message: "Contact not found" }).status(404);
-  }
-};
-
-export const deleteBook = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const owner = req.user.id;
-    const deleteContact = await Books.findOneAndDelete({ _id: id, owner });
-    if (!deleteContact) {
-      return res.status(404).json({ message: "Not found" });
-    }
-    res.json(deleteContact).status(200);
-  } catch (error) {
-    console.log(error);
-    res.status(404).json({ message: "Not found" });
-  }
-};
-
-export const createBook = async (req, res) => {
-  try {
-    const owner = req.user.id;
-    const newContact = { ...req.body, owner };
-    const createdContact = await Books.create(newContact);
-    res.status(201).json(createdContact);
+    const books = await getAllBooks();
+    res.status(200).json(books);
   } catch (error) {
     console.error(error);
-    res.status(400).json({ message: "Bad request" });
+    res.status(500).json({ message: "Error fetching books" });
   }
 };
 
-export const updateBook = async (req, res) => {
+export const createBookController = async (req, res) => {
   try {
-    const { id } = req.params;
-    const owner = req.user.id;
-
-    const update = await Books.findOneAndUpdate(
-      { _id: id, owner },
-      { ...req.body },
-      { new: true }
-    );
-
-    if (Object.keys(req.body).length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Body must have at least one field" });
-    }
-
-    if (!update) {
-      return res.status(400).json({ message: "Not found" });
-    }
-    res.json(update).status(200);
+    const newBook = await createBook(req.body);
+    res.status(201).json(newBook);
   } catch (error) {
-    console.log(error);
-    res.status(404).json({ message: "Not found" });
+    console.error(error);
+    res.status(500).json({ message: "Error creating book" });
   }
 };
 
-export const updateStatus = async (req, res, next) => {
+export const searchBooksController = async (req, res) => {
   try {
-    const { id } = req.params;
-    const owner = req.user.id;
-    const update = await Books.findOneAndUpdate(
-      { _id: id, owner },
-      { favorite: req.body.favorite },
-      { new: true }
-    );
-
-    if (!update) {
-      return res.status(404).json({ message: "Not found" });
+    const { name, author, genre } = req.query;
+    if (!name && !author && !genre) {
+      return res.status(400).json({ message: "At least one search parameter (name, author, or genre) is required" });
     }
-    res.status(200).json(update);
+    const searchCriteria = name ? { name } : author ? { author } : { genre };
+    const books = await searchBooks(searchCriteria);
+    res.status(200).json(books);
   } catch (error) {
-    console.log(error);
-    res.status(404).json({ message: "Not found" });
+    console.error(error);
+    res.status(500).json({ message: "Error searching books" });
   }
 };

@@ -1,74 +1,31 @@
-import { promises as fs } from "fs";
-import path from "path";
+import { Books } from "../models/books.js";
 
-const booksPath = path.join("db", "books.json");
-
-async function listbooks() {
+export const getAllBooks = async () => {
   try {
-    const books = await fs.readFile(booksPath);
-    return JSON.parse(books);
+    const books = await Books.find();
+    return books;
   } catch (error) {
-    console.log(error.message);
+    throw new Error("Error fetching books: " + error.message);
   }
-}
+};
 
-async function getBookById(bookId) {
+export const createBook = async (bookData) => {
   try {
-    const books = await listbooks();
-    const book = books.find((id) => id.id === bookId);
-    if (!book) {
-      return res.status(404).json({ message: "Not found" });
-    }
-    return book;
-  } catch (error) {
-    console.log(error.message);
-     res.status(404).json({ message: "Not found" });
-  }
-}
-
-async function removeBook(bookId) {
-  try {
-    const books = await listbooks();
-    const idx = books.findIndex(({ id }) => id === bookId);
-    if (idx === -1) {
-      return null;
-    }
-    const [book] = books.splice(idx, 1);
-    await fs.writeFile(booksPath, JSON.stringify(books));
-    return book;
-  } catch (error) {
-    console.log(error.message);
-  }
-}
-
-const addBook = async (body) => {
-  try {
-    const list = await listbooks();
-    const newBook = {
-      ...body,
-    };
-    list.push(newBook);
-    await fs.writeFile(booksPath, JSON.stringify(list));
+    const newBook = await Books.create(bookData);
     return newBook;
   } catch (error) {
-    console.log(error);
+    throw new Error("Error creating book: " + error.message);
   }
 };
 
-export const updateBookById = async (id, body) => {
+export const searchBooks = async (searchCriteria) => {
   try {
-    const list = await listbooks();
-    const index = list.findIndex((el) => el.id === id);
-    if (index === -1) {
-      return null;
-    }
-    const updatedBook = { ...list[index], ...body };
-    list[index] = updatedBook;
-    await fs.writeFile(booksPath, JSON.stringify(list));
-    return updatedBook;
+    const field = Object.keys(searchCriteria)[0];
+    const value = searchCriteria[field];
+    const query = { [field]: { $regex: value, $options: 'i' } };
+    const books = await Books.find(query);
+    return books;
   } catch (error) {
-    console.log(error);
+    throw new Error("Error searching books: " + error.message);
   }
 };
-
-export { listbooks, getBookById, removeBook, addBook };
