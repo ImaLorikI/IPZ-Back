@@ -1,16 +1,16 @@
 import { model, Schema } from "mongoose";
 
 
-const contactSchema = new Schema(
+const bookSchema = new Schema(
   {
     name: {
       type: String,
       required: [true, "Set name for contact"],
     },
-    email: {
+    author: {
       type: String,
     },
-    phone: {
+    genre: {
       type: String,
     },
     favorite: {
@@ -28,4 +28,4 @@ const contactSchema = new Schema(
 );
 
 
-export const Contacts = model("contacts", contactSchema);
+export const Books = model("books", bookSchema);

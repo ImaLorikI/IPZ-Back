@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import contactsRouter from "./routes/contactsRouter.js";
+import booksRouter from "./routes/booksRouter.js";
 import authRouter from "./routes/authRouter.js";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
@@ -24,7 +24,7 @@ app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/contacts", contactsRouter);
+app.use("/api/books", booksRouter);
 app.use("/users", authRouter);
 
 app.use((_, res) => {

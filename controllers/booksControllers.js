@@ -1,22 +1,22 @@
 import path from "path";
 
-import { Contacts } from "../models/contacts.js";
+import { Books } from "../models/books.js";
 
-export const getAllContacts = async (req, res) => {
+export const getAllBooks = async (req, res) => {
   try {
     const owner = req.user.id;
-    const getUsers = await Contacts.find({ owner });
+    const getUsers = await Books.find({ owner });
     res.status(200).json(getUsers);
   } catch (error) {
     console.log(error);
   }
 };
 
-export const getOneContact = async (req, res, next) => {
+export const getOneBook = async (req, res, next) => {
   try {
     const { id } = req.params;
     const owner = req.user.id;
-    const get = await Contacts.findOne({ _id: id, owner });
+    const get = await Books.findOne({ _id: id, owner });
     if (!get) {
       return res.status(404).json({ message: "Not found" });
     }
@@ -27,11 +27,11 @@ export const getOneContact = async (req, res, next) => {
   }
 };
 
-export const deleteContact = async (req, res) => {
+export const deleteBook = async (req, res) => {
   try {
     const { id } = req.params;
     const owner = req.user.id;
-    const deleteContact = await Contacts.findOneAndDelete({ _id: id, owner });
+    const deleteContact = await Books.findOneAndDelete({ _id: id, owner });
     if (!deleteContact) {
       return res.status(404).json({ message: "Not found" });
     }
@@ -42,11 +42,11 @@ export const deleteContact = async (req, res) => {
   }
 };
 
-export const createContact = async (req, res) => {
+export const createBook = async (req, res) => {
   try {
     const owner = req.user.id;
     const newContact = { ...req.body, owner };
-    const createdContact = await Contacts.create(newContact);
+    const createdContact = await Books.create(newContact);
     res.status(201).json(createdContact);
   } catch (error) {
     console.error(error);
@@ -54,12 +54,12 @@ export const createContact = async (req, res) => {
   }
 };
 
-export const updateContact = async (req, res) => {
+export const updateBook = async (req, res) => {
   try {
     const { id } = req.params;
     const owner = req.user.id;
 
-    const update = await Contacts.findOneAndUpdate(
+    const update = await Books.findOneAndUpdate(
       { _id: id, owner },
       { ...req.body },
       { new: true }
@@ -85,7 +85,7 @@ export const updateStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
     const owner = req.user.id;
-    const update = await Contacts.findOneAndUpdate(
+    const update = await Books.findOneAndUpdate(
       { _id: id, owner },
       { favorite: req.body.favorite },
       { new: true }
